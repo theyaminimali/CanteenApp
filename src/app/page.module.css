@@ -1,0 +1,28 @@
+.hero { position: relative; overflow: hidden; padding: 80px 20px 60px; min-height: calc(100vh - 70px); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.bgOrbs { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.orb1, .orb2, .orb3 { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.15; }
+.orb1 { width: 400px; height: 400px; background: var(--accent); top: -100px; right: -100px; animation: pulse 6s infinite; }
+.orb2 { width: 300px; height: 300px; background: #8b5cf6; bottom: -50px; left: -50px; animation: pulse 8s infinite 2s; }
+.orb3 { width: 250px; height: 250px; background: #06b6d4; top: 50%; left: 50%; animation: pulse 7s infinite 1s; }
+.content { position: relative; text-align: center; max-width: 700px; margin-bottom: 60px; animation: fadeIn 0.8s ease-out; }
+.badge { display: inline-block; padding: 8px 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 30px; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 24px; }
+.title { font-size: 3.5rem; font-weight: 900; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 20px; }
+.gradient { background: linear-gradient(135deg, var(--accent), #fbbf24, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.subtitle { font-size: 1.15rem; color: var(--text-secondary); line-height: 1.7; max-width: 500px; margin: 0 auto 36px; }
+.actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 48px; }
+.stats { display: flex; gap: 48px; justify-content: center; }
+.stat { display: flex; flex-direction: column; align-items: center; }
+.statNum { font-size: 1.5rem; font-weight: 800; color: var(--accent); }
+.statLabel { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+.cards { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 900px; width: 100%; }
+.featureCard { padding: 32px 24px; text-align: center; }
+.featureCard:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 8px 30px var(--accent-glow); }
+.featureIcon { font-size: 2.5rem; display: block; margin-bottom: 16px; }
+.featureCard h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+.featureCard p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
+
+@media (max-width: 768px) {
+  .title { font-size: 2.2rem; }
+  .cards { grid-template-columns: 1fr; max-width: 400px; }
+  .stats { gap: 24px; }
+}

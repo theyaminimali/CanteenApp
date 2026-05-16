@@ -1,0 +1,17 @@
+.page { padding: 20px 0 60px; }
+.loading { text-align: center; padding: 80px 20px; color: var(--text-muted); }
+.empty { text-align: center; padding: 100px 20px; }
+.empty span { font-size: 4rem; display: block; margin-bottom: 16px; }
+.empty h2 { margin-bottom: 8px; }
+.empty p { color: var(--text-secondary); margin-bottom: 24px; }
+.list { display: flex; flex-direction: column; gap: 16px; }
+.orderCard { display: block; padding: 24px; cursor: pointer; }
+.orderCard:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+.orderTop { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.orderId { font-weight: 700; font-size: 0.95rem; margin-right: 12px; }
+.orderDate { font-size: 0.8rem; color: var(--text-muted); }
+.orderItems { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.orderItem { font-size: 0.8rem; padding: 4px 10px; background: var(--bg-secondary); border-radius: 6px; color: var(--text-secondary); }
+.orderBottom { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border); }
+.orderTotal { font-size: 1.2rem; font-weight: 800; color: var(--accent); }
+.viewBtn { font-size: 0.85rem; color: var(--accent); font-weight: 500; }
