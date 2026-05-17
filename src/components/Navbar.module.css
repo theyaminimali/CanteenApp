@@ -56,9 +56,15 @@
   .hamburger { display: flex; }
   .links {
     position: fixed; top: 70px; left: 0; right: 0; bottom: 0;
-    background: var(--bg-primary); flex-direction: column;
-    padding: 32px 20px; gap: 20px;
+    background: #0c0c12 !important;
+    backdrop-filter: blur(25px);
+    flex-direction: column;
+    padding: 40px 20px; gap: 28px;
     transform: translateX(100%); transition: var(--transition);
+    z-index: 99999 !important;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
   }
   .linksOpen { transform: translateX(0); }
 }
