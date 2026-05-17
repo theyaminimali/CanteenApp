@@ -25,4 +25,74 @@
   .title { font-size: 2.2rem; }
   .cards { grid-template-columns: 1fr; max-width: 400px; }
   .stats { gap: 24px; }
+  .dashboardGrid { grid-template-columns: 1fr !important; }
+}
+
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  max-width: 800px;
+  width: 100%;
+  margin: 32px auto 0;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.dashboardCard {
+  padding: 32px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboardCard:hover {
+  transform: translateY(-6px);
+  border-color: var(--accent);
+  box-shadow: 0 12px 30px var(--accent-glow);
+}
+
+.dashboardCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, var(--accent-glow) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.dashboardCard:hover::after {
+  opacity: 0.1;
+}
+
+.dashboardCardIcon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 16px;
+  transition: transform 0.3s ease;
+}
+
+.dashboardCard:hover .dashboardCardIcon {
+  transform: scale(1.15) rotate(5deg);
+}
+
+.dashboardCardTitle {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.dashboardCardDesc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
 }
