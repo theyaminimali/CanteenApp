@@ -50,11 +50,11 @@ export default function Navbar() {
           if (orderData.status === 'ready' && !notifiedOrders.current.has(orderId)) {
             notifiedOrders.current.add(orderId);
             
-            // Play notification sound (high quality success musical chime - NOT a bell sound)
+            // Play notification sound (heavy classic doorbell sound)
             try {
-              const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
+              const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
               audio.preload = 'auto';
-              audio.volume = 0.9;
+              audio.volume = 1.0; // Play at maximum volume for maximum audibility
               audio.play().catch(err => console.warn('Audio playback failed or blocked by browser:', err));
             } catch (e) {
               console.error("Audio playback error:", e);
