@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { useCart } from '@/context/CartContext';
@@ -54,6 +55,11 @@ export default function MenuPage() {
   const { addToCart } = useCart();
   const { user, userData } = useAuth();
   const { toasts, addToast, removeToast } = useToast();
+  const router = useRouter();
+  
+  // Dialog States for Cart Add confirmation
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [addedItemName, setAddedItemName] = useState('');
 
   const fetchMenuItems = useCallback(async () => {
     try {
@@ -83,7 +89,8 @@ export default function MenuPage() {
   const handleAddToCart = (item) => {
     if (!user) { addToast('Please login to add items to cart', 'error'); return; }
     addToCart(item);
-    addToast(`${item.name} added to cart!`, 'success');
+    setAddedItemName(item.name);
+    setShowSuccessDialog(true);
   };
 
   const { greeting, wish } = getWishesAndGreeting();
@@ -142,6 +149,43 @@ export default function MenuPage() {
           </div>
         )}
       </div>
+      {showSuccessDialog && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.7)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          animation: 'fadeIn 0.2s ease-out'
+        }}>
+          <div className="glass-card" style={{
+            background: 'var(--bg-primary)',
+            padding: '32px',
+            borderRadius: '24px',
+            textAlign: 'center',
+            maxWidth: '400px',
+            width: '90%',
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+            border: '1px solid var(--border)',
+            animation: 'scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+          }}>
+            <span style={{ fontSize: '3.5rem', display: 'block', marginBottom: '16px' }}>🎉</span>
+            <h2 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--accent)', marginBottom: '12px' }}>done</h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', fontWeight: 500, marginBottom: '24px', lineHeight: '1.5' }}>
+              {addedItemName} has been successfully added to your cart!
+            </p>
+            <button className="btn btn-primary btn-lg" style={{ width: '100%', padding: '12px 24px', fontWeight: 600 }} onClick={() => router.push('/')}>
+              Done
+            </button>
+          </div>
+        </div>
+      )}
       <ToastContainer toasts={toasts} removeToast={removeToast} />
     </div>
   );
