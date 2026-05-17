@@ -45,6 +45,17 @@ export function AuthProvider({ children }) {
     try {
       // Try logging in first
       const result = await signInWithEmailAndPassword(auth, email, password);
+      // Update name in Firestore to match the typed name upon login
+      await setDoc(doc(db, 'users', result.user.uid), {
+        name,
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+      
+      // Fetch latest document to ensure React state is fully synchronized
+      const latestDoc = await getDoc(doc(db, 'users', result.user.uid));
+      if (latestDoc.exists()) {
+        setUserData(latestDoc.data());
+      }
       return result;
     } catch (error) {
       // If user not found, register them automatically

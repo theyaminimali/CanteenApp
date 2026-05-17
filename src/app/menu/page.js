@@ -28,6 +28,23 @@ const SAMPLE_ITEMS = [
   { id: '16', name: 'Ice Cream', description: 'Choice of vanilla, chocolate or butterscotch', price: 40, category: 'Desserts', veg: true, emoji: '🍨', available: true },
 ];
 
+const getWishesAndGreeting = () => {
+  const hr = new Date().getHours();
+  let greeting = "Good morning! ☀️";
+  let wish = "Start your day with a delicious and fresh breakfast! Wishing you an energetic and wonderful day ahead! 🥞✨";
+  if (hr >= 12 && hr < 17) {
+    greeting = "Good afternoon! 🍛";
+    wish = "Enjoy a wholesome, satisfying lunch to keep you going! Wishing you a super productive and happy afternoon! 🍱✨";
+  } else if (hr >= 17 && hr < 21) {
+    greeting = "Good evening! ☕";
+    wish = "Time for a hot cup of tea and some crispy snacks! Wishing you a relaxing and peaceful evening! 🥟✨";
+  } else if (hr >= 21 || hr < 4) {
+    greeting = "Good night! 🌌";
+    wish = "Grab a sweet dessert or a warm beverage before you wrap up! Wishing you sweet dreams and a restful night! 🍨✨";
+  }
+  return { greeting, wish };
+};
+
 export default function MenuPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,7 +52,7 @@ export default function MenuPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [vegOnly, setVegOnly] = useState(false);
   const { addToCart } = useCart();
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
   const { toasts, addToast, removeToast } = useToast();
 
   const fetchMenuItems = useCallback(async () => {
@@ -69,12 +86,18 @@ export default function MenuPage() {
     addToast(`${item.name} added to cart!`, 'success');
   };
 
+  const { greeting, wish } = getWishesAndGreeting();
+
   return (
     <div className={styles.page}>
       <div className="container">
-        <div className="page-header">
-          <h1>Our Menu</h1>
-          <p>Fresh and delicious food made with love ❤️</p>
+        <div className="page-header" style={{ marginBottom: '32px', textAlign: 'center' }}>
+          <h1 style={{ background: 'linear-gradient(135deg, var(--accent), #fbbf24, #f97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontSize: '2.5rem', fontWeight: 900, marginBottom: '8px' }}>
+            {greeting.split('!')[0]}, {userData?.name || user?.email?.split('@')[0] || 'Guest'}! ✨
+          </h1>
+          <p style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto', lineHeight: '1.6', fontWeight: 500 }}>
+            {wish}
+          </p>
         </div>
         <div className={styles.filters}>
           <div className={styles.searchWrap}>
