@@ -109,8 +109,8 @@ export default function MenuPage() {
                   <p className={styles.cardDesc}>{item.description}</p>
                   <div className={styles.cardBottom}>
                     <span className={styles.price}>₹{item.price}</span>
-                    <button className="btn btn-primary btn-sm" onClick={() => handleAddToCart(item)} disabled={!item.available}>
-                      {item.available ? '+ Add' : 'Unavailable'}
+                    <button className="btn btn-primary btn-sm" onClick={() => handleAddToCart(item)} disabled={!item.available} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {item.available ? '🛒 Add to Cart' : 'Unavailable'}
                     </button>
                   </div>
                 </div>
