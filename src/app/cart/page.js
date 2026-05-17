@@ -116,16 +116,21 @@ export default function CartPage() {
       </div>
     </div>
       {showSuccessDialog && (
-        <div className={styles.dialogOverlay}>
-          <div className={`${styles.dialogBox} glass-card`}>
-            <span className={styles.dialogIcon}>🎉</span>
-            <h2>Success!</h2>
-            <p>{userData?.name} Your Order paced</p>
-            <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => router.push('/')}>
-              Continue
-            </button>
+        <>
+          <style>{`
+            nav { display: none !important; }
+          `}</style>
+          <div className={styles.dialogOverlay}>
+            <div className={`${styles.dialogBox} glass-card`}>
+              <span className={styles.dialogIcon}>🎉</span>
+              <h2>Success!</h2>
+              <p>{userData?.name} Your Order paced</p>
+              <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => router.push('/')}>
+                Continue
+              </button>
+            </div>
           </div>
-        </div>
+        </>
       )}
       <ToastContainer toasts={toasts} removeToast={removeToast} />
     </div>
