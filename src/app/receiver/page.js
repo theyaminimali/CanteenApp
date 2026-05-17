@@ -10,7 +10,7 @@ import styles from './receiver.module.css';
 export default function ReceiverDashboard() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user, userData } = useAuth();
+  const { user, userData, loading: authLoading } = useAuth();
   const { toasts, addToast, removeToast } = useToast();
   const router = useRouter();
 
@@ -18,6 +18,7 @@ export default function ReceiverDashboard() {
   const isFirstLoad = useRef(true);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user) { router.push('/login'); return; }
     if (userData && userData.role !== 'receiver') { router.push('/'); return; }
 
@@ -49,7 +50,7 @@ export default function ReceiverDashboard() {
     });
 
     return () => unsub();
-  }, [user, userData, router]);
+  }, [user, userData, authLoading, router]);
 
   const updateStatus = async (orderId, newStatus) => {
     try {
@@ -66,6 +67,23 @@ export default function ReceiverDashboard() {
     const d = ts.toDate ? ts.toDate() : new Date(ts);
     return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
   };
+
+  if (authLoading) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 70px)', gap: '16px' }}>
+        <svg width="40" height="40" viewBox="0 0 50 50" style={{ animation: 'spin 1s linear infinite' }}>
+          <circle cx="25" cy="25" r="20" fill="none" stroke="var(--accent)" strokeWidth="4" strokeDasharray="80 200" strokeLinecap="round" />
+        </svg>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', fontWeight: 500 }}>Securing connection...</p>
+      </div>
+    );
+  }
 
   if (loading) return <div className={styles.loading}>Loading Receiver Station...</div>;
 

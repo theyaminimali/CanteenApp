@@ -14,6 +14,7 @@ export function CartProvider({ children }) {
     const saved = localStorage.getItem('canteen-cart');
     if (saved) {
       try {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCartItems(JSON.parse(saved));
       } catch (e) {
         console.error('Failed to load cart:', e);

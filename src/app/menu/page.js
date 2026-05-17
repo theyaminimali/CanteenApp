@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { useCart } from '@/context/CartContext';
@@ -8,6 +8,25 @@ import { ToastContainer, useToast } from '@/components/Toast';
 import styles from './menu.module.css';
 
 const CATEGORIES = ['All', 'Breakfast', 'Lunch', 'Snacks', 'Beverages', 'Desserts'];
+
+const SAMPLE_ITEMS = [
+  { id: '1', name: 'Masala Dosa', description: 'Crispy dosa with potato filling, served with chutney & sambar', price: 50, category: 'Breakfast', veg: true, emoji: '🥞', available: true },
+  { id: '2', name: 'Idli Sambar', description: 'Soft steamed idli with hot sambar and coconut chutney', price: 35, category: 'Breakfast', veg: true, emoji: '🍚', available: true },
+  { id: '3', name: 'Poha', description: 'Flattened rice with peanuts, curry leaves & lemon', price: 30, category: 'Breakfast', veg: true, emoji: '🍛', available: true },
+  { id: '4', name: 'Veg Thali', description: 'Complete meal with dal, sabzi, roti, rice, salad & sweet', price: 80, category: 'Lunch', veg: true, emoji: '🍱', available: true },
+  { id: '5', name: 'Chicken Biryani', description: 'Aromatic basmati rice with tender chicken and spices', price: 120, category: 'Lunch', veg: false, emoji: '🍗', available: true },
+  { id: '6', name: 'Paneer Butter Masala', description: 'Rich creamy gravy with soft paneer cubes, served with naan', price: 100, category: 'Lunch', veg: true, emoji: '🧈', available: true },
+  { id: '7', name: 'Rajma Chawal', description: 'Kidney beans curry with steamed basmati rice', price: 70, category: 'Lunch', veg: true, emoji: '🫘', available: true },
+  { id: '8', name: 'Samosa', description: 'Crispy pastry filled with spiced potatoes and peas', price: 15, category: 'Snacks', veg: true, emoji: '🥟', available: true },
+  { id: '9', name: 'Vada Pav', description: 'Mumbai style spicy potato fritter in a bun', price: 20, category: 'Snacks', veg: true, emoji: '🍔', available: true },
+  { id: '10', name: 'French Fries', description: 'Crispy golden fries with seasoning', price: 40, category: 'Snacks', veg: true, emoji: '🍟', available: true },
+  { id: '11', name: 'Chicken Roll', description: 'Grilled chicken wrapped in rumali roti with mint chutney', price: 60, category: 'Snacks', veg: false, emoji: '🌯', available: true },
+  { id: '12', name: 'Chai', description: 'Hot Indian tea with ginger and cardamom', price: 15, category: 'Beverages', veg: true, emoji: '☕', available: true },
+  { id: '13', name: 'Cold Coffee', description: 'Chilled coffee blended with ice cream', price: 50, category: 'Beverages', veg: true, emoji: '🧋', available: true },
+  { id: '14', name: 'Mango Lassi', description: 'Thick yogurt smoothie with fresh mango pulp', price: 45, category: 'Beverages', veg: true, emoji: '🥭', available: true },
+  { id: '15', name: 'Gulab Jamun', description: 'Soft milk dumplings in warm sugar syrup', price: 30, category: 'Desserts', veg: true, emoji: '🍩', available: true },
+  { id: '16', name: 'Ice Cream', description: 'Choice of vanilla, chocolate or butterscotch', price: 40, category: 'Desserts', veg: true, emoji: '🍨', available: true },
+];
 
 export default function MenuPage() {
   const [items, setItems] = useState([]);
@@ -19,41 +38,23 @@ export default function MenuPage() {
   const { user } = useAuth();
   const { toasts, addToast, removeToast } = useToast();
 
-  useEffect(() => {
-    fetchMenuItems();
-  }, []);
-
-  const fetchMenuItems = async () => {
+  const fetchMenuItems = useCallback(async () => {
     try {
       const q = query(collection(db, 'menuItems'), orderBy('category'));
       const snapshot = await getDocs(q);
       const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setItems(data.length > 0 ? data : getSampleItems());
+      setItems(data.length > 0 ? data : SAMPLE_ITEMS);
     } catch (err) {
       console.error('Error fetching menu:', err);
-      setItems(getSampleItems());
+      setItems(SAMPLE_ITEMS);
     }
     setLoading(false);
-  };
+  }, []);
 
-  const getSampleItems = () => [
-    { id: '1', name: 'Masala Dosa', description: 'Crispy dosa with potato filling, served with chutney & sambar', price: 50, category: 'Breakfast', veg: true, emoji: '🥞', available: true },
-    { id: '2', name: 'Idli Sambar', description: 'Soft steamed idli with hot sambar and coconut chutney', price: 35, category: 'Breakfast', veg: true, emoji: '🍚', available: true },
-    { id: '3', name: 'Poha', description: 'Flattened rice with peanuts, curry leaves & lemon', price: 30, category: 'Breakfast', veg: true, emoji: '🍛', available: true },
-    { id: '4', name: 'Veg Thali', description: 'Complete meal with dal, sabzi, roti, rice, salad & sweet', price: 80, category: 'Lunch', veg: true, emoji: '🍱', available: true },
-    { id: '5', name: 'Chicken Biryani', description: 'Aromatic basmati rice with tender chicken and spices', price: 120, category: 'Lunch', veg: false, emoji: '🍗', available: true },
-    { id: '6', name: 'Paneer Butter Masala', description: 'Rich creamy gravy with soft paneer cubes, served with naan', price: 100, category: 'Lunch', veg: true, emoji: '🧈', available: true },
-    { id: '7', name: 'Rajma Chawal', description: 'Kidney beans curry with steamed basmati rice', price: 70, category: 'Lunch', veg: true, emoji: '🫘', available: true },
-    { id: '8', name: 'Samosa', description: 'Crispy pastry filled with spiced potatoes and peas', price: 15, category: 'Snacks', veg: true, emoji: '🥟', available: true },
-    { id: '9', name: 'Vada Pav', description: 'Mumbai style spicy potato fritter in a bun', price: 20, category: 'Snacks', veg: true, emoji: '🍔', available: true },
-    { id: '10', name: 'French Fries', description: 'Crispy golden fries with seasoning', price: 40, category: 'Snacks', veg: true, emoji: '🍟', available: true },
-    { id: '11', name: 'Chicken Roll', description: 'Grilled chicken wrapped in rumali roti with mint chutney', price: 60, category: 'Snacks', veg: false, emoji: '🌯', available: true },
-    { id: '12', name: 'Chai', description: 'Hot Indian tea with ginger and cardamom', price: 15, category: 'Beverages', veg: true, emoji: '☕', available: true },
-    { id: '13', name: 'Cold Coffee', description: 'Chilled coffee blended with ice cream', price: 50, category: 'Beverages', veg: true, emoji: '🧋', available: true },
-    { id: '14', name: 'Mango Lassi', description: 'Thick yogurt smoothie with fresh mango pulp', price: 45, category: 'Beverages', veg: true, emoji: '🥭', available: true },
-    { id: '15', name: 'Gulab Jamun', description: 'Soft milk dumplings in warm sugar syrup', price: 30, category: 'Desserts', veg: true, emoji: '🍩', available: true },
-    { id: '16', name: 'Ice Cream', description: 'Choice of vanilla, chocolate or butterscotch', price: 40, category: 'Desserts', veg: true, emoji: '🍨', available: true },
-  ];
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchMenuItems();
+  }, [fetchMenuItems]);
 
   const filteredItems = items.filter((item) => {
     const matchCategory = activeCategory === 'All' || item.category === activeCategory;

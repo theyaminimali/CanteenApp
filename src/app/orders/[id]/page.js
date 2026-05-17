@@ -14,17 +14,18 @@ export default function OrderDetailPage({ params }) {
   const { id } = use(params);
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user) { router.push('/login'); return; }
     const unsub = onSnapshot(doc(db, 'orders', id), (snap) => {
       if (snap.exists()) setOrder({ id: snap.id, ...snap.data() });
       setLoading(false);
     });
     return () => unsub();
-  }, [user, id]);
+  }, [user, id, authLoading, router]);
 
   const formatDate = (ts) => {
     if (!ts) return '';
@@ -33,6 +34,23 @@ export default function OrderDetailPage({ params }) {
   };
 
   const currentStep = STEPS.indexOf(order?.status || 'pending');
+
+  if (authLoading) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 70px)', gap: '16px' }}>
+        <svg width="40" height="40" viewBox="0 0 50 50" style={{ animation: 'spin 1s linear infinite' }}>
+          <circle cx="25" cy="25" r="20" fill="none" stroke="var(--accent)" strokeWidth="4" strokeDasharray="80 200" strokeLinecap="round" />
+        </svg>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', fontWeight: 500 }}>Securing connection...</p>
+      </div>
+    );
+  }
 
   if (loading) return <div className={styles.page}><div className="container"><p className={styles.loading}>Loading order...</p></div></div>;
   if (!order) return <div className={styles.page}><div className="container"><p className={styles.loading}>Order not found</p></div></div>;
