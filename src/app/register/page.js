@@ -68,7 +68,7 @@ export default function RegisterPage() {
         <div className={styles.header}>
           <span className={styles.icon}>👨‍🍳</span>
           <h1>Receiver Access</h1>
-          <p>Access the exclusive canteen receiver account (yaminimali2007)</p>
+          <p>Access the exclusive canteen receiver account</p>
         </div>
         {error && <div className={styles.error}>{error}</div>}
         <form onSubmit={handleSubmit} className={styles.form}>

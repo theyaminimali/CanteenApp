@@ -1,10 +1,35 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/context/CartContext';
+import { db } from '@/lib/firebase';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { ToastContainer, useToast } from '@/components/Toast';
 import styles from './page.module.css';
+import menuStyles from './menu/menu.module.css';
 import loginStyles from './login/login.module.css';
+
+const CATEGORIES = ['All', 'Breakfast', 'Lunch', 'Snacks', 'Beverages', 'Desserts'];
+
+const SAMPLE_ITEMS = [
+  { id: '1', name: 'Masala Dosa', description: 'Crispy dosa with potato filling, served with chutney & sambar', price: 50, category: 'Breakfast', veg: true, emoji: '🥞', available: true },
+  { id: '2', name: 'Idli Sambar', description: 'Soft steamed idli with hot sambar and coconut chutney', price: 35, category: 'Breakfast', veg: true, emoji: '🍚', available: true },
+  { id: '3', name: 'Poha', description: 'Flattened rice with peanuts, curry leaves & lemon', price: 30, category: 'Breakfast', veg: true, emoji: '🍛', available: true },
+  { id: '4', name: 'Veg Thali', description: 'Complete meal with dal, sabzi, roti, rice, salad & sweet', price: 80, category: 'Lunch', veg: true, emoji: '🍱', available: true },
+  { id: '5', name: 'Chicken Biryani', description: 'Aromatic basmati rice with tender chicken and spices', price: 120, category: 'Lunch', veg: false, emoji: '🍗', available: true },
+  { id: '6', name: 'Paneer Butter Masala', description: 'Rich creamy gravy with soft paneer cubes, served with naan', price: 100, category: 'Lunch', veg: true, emoji: '🧈', available: true },
+  { id: '7', name: 'Rajma Chawal', description: 'Kidney beans curry with steamed basmati rice', price: 70, category: 'Lunch', veg: true, emoji: '🫘', available: true },
+  { id: '8', name: 'Samosa', description: 'Crispy pastry filled with spiced potatoes and peas', price: 15, category: 'Snacks', veg: true, emoji: '🥟', available: true },
+  { id: '9', name: 'Vada Pav', description: 'Mumbai style spicy potato fritter in a bun', price: 20, category: 'Snacks', veg: true, emoji: '🍔', available: true },
+  { id: '10', name: 'French Fries', description: 'Crispy golden fries with seasoning', price: 40, category: 'Snacks', veg: true, emoji: '🍟', available: true },
+  { id: '11', name: 'Chicken Roll', description: 'Grilled chicken wrapped in rumali roti with mint chutney', price: 60, category: 'Snacks', veg: false, emoji: '🌯', available: true },
+  { id: '12', name: 'Chai', description: 'Hot Indian tea with ginger and cardamom', price: 15, category: 'Beverages', veg: true, emoji: '☕', available: true },
+  { id: '13', name: 'Cold Coffee', description: 'Chilled coffee blended with ice cream', price: 50, category: 'Beverages', veg: true, emoji: '🧋', available: true },
+  { id: '14', name: 'Mango Lassi', description: 'Thick yogurt smoothie with fresh mango pulp', price: 45, category: 'Beverages', veg: true, emoji: '🥭', available: true },
+  { id: '15', name: 'Gulab Jamun', description: 'Soft milk dumplings in warm sugar syrup', price: 30, category: 'Desserts', veg: true, emoji: '🍩', available: true },
+  { id: '16', name: 'Ice Cream', description: 'Choice of vanilla, chocolate or butterscotch', price: 40, category: 'Desserts', veg: true, emoji: '🍨', available: true },
+];
 
 const getWishesAndGreeting = () => {
   const hr = new Date().getHours();
@@ -24,7 +49,8 @@ const getWishesAndGreeting = () => {
 };
 
 export default function Home() {
-  const { user, userData, loginWithPhone, logout, loading: authLoading } = useAuth();
+  const { user, userData, loginWithPhone, loading: authLoading } = useAuth();
+  const { addToCart } = useCart();
   const { toasts, addToast, removeToast } = useToast();
   const router = useRouter();
 
@@ -33,6 +59,33 @@ export default function Home() {
   const [phone, setPhone] = useState('+91');
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
+
+  // Menu States
+  const [menuItems, setMenuItems] = useState([]);
+  const [menuLoading, setMenuLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [vegOnly, setVegOnly] = useState(false);
+
+  const fetchMenuItems = useCallback(async () => {
+    try {
+      const q = query(collection(db, 'menuItems'), orderBy('category'));
+      const snapshot = await getDocs(q);
+      const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setMenuItems(data.length > 0 ? data : SAMPLE_ITEMS);
+    } catch (err) {
+      console.error('Error fetching menu:', err);
+      setMenuItems(SAMPLE_ITEMS);
+    }
+    setMenuLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      fetchMenuItems();
+    }
+  }, [user, fetchMenuItems]);
 
   // Handle auto-redirecting for admin and receiver to their respective dashboards
   useEffect(() => {
@@ -67,6 +120,18 @@ export default function Home() {
     setLoginLoading(false);
   };
 
+  const handleAddToCart = (item) => {
+    addToCart(item);
+    addToast(`${item.name} added to cart! 🛒`, 'success');
+  };
+
+  const filteredItems = menuItems.filter((item) => {
+    const matchCategory = activeCategory === 'All' || item.category === activeCategory;
+    const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchVeg = !vegOnly || item.veg;
+    return matchCategory && matchSearch && matchVeg;
+  });
+
   const { greeting, wish } = getWishesAndGreeting();
 
   // Show premium loading spinner when checking auth persistence
@@ -87,7 +152,7 @@ export default function Home() {
     );
   }
 
-  // 1. Not Logged In Layout: Welcome Wishes + Student Login below
+  // 1. Not Logged In Layout
   if (!user) {
     return (
       <div className={styles.hero} style={{ minHeight: 'calc(100vh - 70px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px' }}>
@@ -162,67 +227,93 @@ export default function Home() {
     );
   }
 
-  // 2. Logged In: Student Dashboard / Second Interface
+  // 2. Logged In: Open Menu Card in a Good Manner
   return (
-    <div className={styles.hero} style={{ minHeight: 'calc(100vh - 70px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '60px 20px 40px' }}>
-      <div className={styles.bgOrbs}>
-        <div className={styles.orb1} />
-        <div className={styles.orb2} />
-        <div className={styles.orb3} />
-      </div>
-
-      <div className="container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', zIndex: 2 }}>
+    <div className={menuStyles.page}>
+      <div className="container">
         {/* Dynamic Good Wishes & Greeting Header for logged-in user */}
-        <div className="page-header" style={{ marginBottom: '16px', textAlign: 'center' }}>
+        <div className="page-header" style={{ marginBottom: '32px', textAlign: 'center' }}>
           <h1 className={styles.gradient} style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '8px' }}>
-            {greeting.split('!')[0]}, {userData?.name || user?.email?.split('@')[0]}! ✨
+            {greeting.split('!')[0]}, {userData?.name || 'Student'}! ✨
           </h1>
           <p style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto', lineHeight: '1.6', fontWeight: 500 }}>
             {wish}
           </p>
         </div>
 
-        {/* 2x2 Student Dashboard Grid with exact 4 buttons: Menu, My Orders, Add to Cart (Cart), Logout */}
-        <div className={styles.dashboardGrid}>
-          {/* 1. Menu Button */}
-          <div className={`${styles.dashboardCard} glass-card`} onClick={() => router.push('/menu')}>
-            <span className={styles.dashboardCardIcon}>📖</span>
-            <h3 className={styles.dashboardCardTitle}>Menu</h3>
-            <p className={styles.dashboardCardDesc}>
-              Explore our fresh, delicious dishes and place your order
-            </p>
+        {/* Menu Search and Toggles */}
+        <div className={menuStyles.filters}>
+          <div className={menuStyles.searchWrap}>
+            <span className={menuStyles.searchIcon}>🔍</span>
+            <input 
+              className={`input-field ${menuStyles.searchInput}`} 
+              placeholder="Search dishes..." 
+              value={searchQuery} 
+              onChange={(e) => setSearchQuery(e.target.value)} 
+            />
           </div>
-
-          {/* 2. My Orders Button */}
-          <div className={`${styles.dashboardCard} glass-card`} onClick={() => router.push('/orders')}>
-            <span className={styles.dashboardCardIcon}>📦</span>
-            <h3 className={styles.dashboardCardTitle}>My Orders</h3>
-            <p className={styles.dashboardCardDesc}>
-              Track your pending orders and pick them up when ready
-            </p>
-          </div>
-
-          {/* 3. Add to Cart Button */}
-          <div className={`${styles.dashboardCard} glass-card`} onClick={() => router.push('/cart')}>
-            <span className={styles.dashboardCardIcon}>🛒</span>
-            <h3 className={styles.dashboardCardTitle}>Add to Cart</h3>
-            <p className={styles.dashboardCardDesc}>
-              View items in your cart, add notes, and checkout quickly
-            </p>
-          </div>
-
-          {/* 4. Logout Button */}
-          <div className={`${styles.dashboardCard} glass-card`} onClick={async () => {
-            await logout();
-            addToast('Logged out successfully! See you soon! 👋', 'success');
-          }}>
-            <span className={styles.dashboardCardIcon}>🚪</span>
-            <h3 className={styles.dashboardCardTitle}>Logout</h3>
-            <p className={styles.dashboardCardDesc}>
-              Securely exit your account session on this device
-            </p>
-          </div>
+          <button 
+            className={`${menuStyles.vegToggle} ${vegOnly ? menuStyles.vegActive : ''}`} 
+            onClick={() => setVegOnly(!vegOnly)}
+          >
+            <span className={menuStyles.vegDot} /> Veg Only
+          </button>
         </div>
+
+        {/* Categories Selection */}
+        <div className={menuStyles.categories}>
+          {CATEGORIES.map((cat) => (
+            <button 
+              key={cat} 
+              className={`${menuStyles.catBtn} ${activeCategory === cat ? menuStyles.catActive : ''}`} 
+              onClick={() => setActiveCategory(cat)}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Grid of Dishes with direct Add to Cart buttons */}
+        {menuLoading ? (
+          <div className={menuStyles.grid}>
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className={`${menuStyles.card} skeleton`} style={{ height: 280 }} />
+            ))}
+          </div>
+        ) : filteredItems.length === 0 ? (
+          <div className={menuStyles.empty}>
+            <span>😕</span>
+            <p>No items found matching your filters.</p>
+          </div>
+        ) : (
+          <div className={menuStyles.grid}>
+            {filteredItems.map((item, i) => (
+              <div key={item.id} className={`${menuStyles.card} glass-card`} style={{ animationDelay: `${i * 0.05}s` }}>
+                <div className={menuStyles.cardEmoji}>{item.emoji || '🍽️'}</div>
+                <div className={menuStyles.cardBody}>
+                  <div className={menuStyles.cardTop}>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>{item.name}</h3>
+                    <span className={item.veg ? menuStyles.vegBadge : menuStyles.nonvegBadge}>
+                      {item.veg ? '🟢' : '🔴'}
+                    </span>
+                  </div>
+                  <p className={menuStyles.cardDesc}>{item.description}</p>
+                  <div className={menuStyles.cardBottom}>
+                    <span className={menuStyles.price}>₹{item.price}</span>
+                    <button 
+                      className="btn btn-primary btn-sm" 
+                      onClick={() => handleAddToCart(item)} 
+                      disabled={!item.available}
+                      style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      {item.available ? '🛒 Add to Cart' : 'Unavailable'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
       <ToastContainer toasts={toasts} removeToast={removeToast} />
     </div>
