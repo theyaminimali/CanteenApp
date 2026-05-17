@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { useCart } from '@/context/CartContext';
@@ -51,9 +52,10 @@ export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [vegOnly, setVegOnly] = useState(false);
-  const { addToCart } = useCart();
+  const { addToCart, cartCount, cartTotal } = useCart();
   const { user, userData } = useAuth();
   const { toasts, addToast, removeToast } = useToast();
+  const router = useRouter();
 
   const fetchMenuItems = useCallback(async () => {
     try {
@@ -142,6 +144,65 @@ export default function MenuPage() {
           </div>
         )}
       </div>
+
+      {/* Floating Bottom Cart Bar for Quick Checkout */}
+      {cartCount > 0 && (
+        <div className="floating-cart-bar-container">
+          <div className="floating-cart-bar glass-card">
+            <div className="floating-cart-info">
+              <span className="floating-cart-badge">🛒 View Cart ({cartCount} {cartCount === 1 ? 'item' : 'items'})</span>
+              <span className="floating-cart-total">Total: ₹{cartTotal}</span>
+            </div>
+            <button className="btn btn-primary" onClick={() => router.push('/cart')} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 24px', borderRadius: '30px' }}>
+              View Cart & Place Order →
+            </button>
+          </div>
+          <style>{`
+            .floating-cart-bar-container {
+              position: fixed;
+              bottom: 24px;
+              left: 50%;
+              transform: translateX(-50%);
+              width: calc(100% - 40px);
+              max-width: 580px;
+              z-index: 1000;
+              animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+            }
+            .floating-cart-bar {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              padding: 14px 24px;
+              border-radius: 40px;
+              border: 1px solid var(--accent-glow);
+              box-shadow: 0 12px 32px rgba(234, 88, 12, 0.25), 0 0 0 1px var(--accent-glow);
+              background: rgba(15, 15, 25, 0.85) !important;
+              backdrop-filter: blur(20px);
+            }
+            .floating-cart-info {
+              display: flex;
+              flex-direction: column;
+              gap: 2px;
+              text-align: left;
+            }
+            .floating-cart-badge {
+              font-weight: 700;
+              font-size: 0.95rem;
+              color: var(--text-primary);
+            }
+            .floating-cart-total {
+              font-size: 0.85rem;
+              color: var(--accent);
+              font-weight: 600;
+            }
+            @keyframes slideUp {
+              0% { transform: translate(-50%, 100px); opacity: 0; }
+              100% { transform: translate(-50%, 0); opacity: 1; }
+            }
+          `}</style>
+        </div>
+      )}
+
       <ToastContainer toasts={toasts} removeToast={removeToast} />
     </div>
   );
