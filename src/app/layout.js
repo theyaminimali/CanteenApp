@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar';
 export const metadata = {
   title: 'CampusBite - College Canteen Ordering',
   description: 'Order food from your college canteen. Browse menu, place orders, and track them in real-time.',
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({ children }) {

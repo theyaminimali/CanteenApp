@@ -1,0 +1,17 @@
+{
+  "name": "CampusBite College Canteen",
+  "short_name": "CampusBite",
+  "description": "Order food from your college canteen and track it in real-time.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#121214",
+  "theme_color": "#ffc72c",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1046/1046747.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

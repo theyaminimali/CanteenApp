@@ -20,11 +20,19 @@ export default function Navbar() {
     try { await logout(); } catch (e) { console.error(e); }
   };
 
-  // Request browser notification permissions on mount
+  // Request browser notification permissions and register Service Worker on mount
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      if (Notification.permission === 'default') {
+    if (typeof window !== 'undefined') {
+      // Request native Notification permission
+      if ('Notification' in window && Notification.permission === 'default') {
         Notification.requestPermission().catch(err => console.error("Notification permission request failed:", err));
+      }
+
+      // Register PWA Service Worker for home-screen installability
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+          .then((reg) => console.log('Service Worker registered successfully:', reg.scope))
+          .catch((err) => console.error('Service Worker registration failed:', err));
       }
     }
   }, []);
