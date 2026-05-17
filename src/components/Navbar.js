@@ -151,7 +151,7 @@ export default function Navbar() {
               </>
             ) : (
               <div className={styles.authLinks}>
-                <Link href="/login" className="btn btn-primary btn-sm" onClick={() => setMenuOpen(false)}>Student Login</Link>
+                <Link href="/" className="btn btn-primary btn-sm" onClick={() => setMenuOpen(false)}>Student Login</Link>
                 <Link href="/register" className={styles.receiverLink} onClick={() => setMenuOpen(false)}>Receiver Station</Link>
               </div>
             )}

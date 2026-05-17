@@ -20,7 +20,7 @@ export default function LoginPage() {
       } else if (userData?.role === 'receiver') {
         router.push('/receiver');
       } else {
-        router.push('/menu');
+        router.push('/');
       }
     }
   }, [user, userData, authLoading, router]);
@@ -40,7 +40,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await loginWithPhone(name, cleanPhone);
-      router.push('/menu');
+      router.push('/');
     } catch (err) {
       setError(err.message.includes('invalid') ? 'Invalid details provided' : err.message);
     }
