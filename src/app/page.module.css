@@ -21,13 +21,6 @@
 .featureCard h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
 .featureCard p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
 
-@media (max-width: 768px) {
-  .title { font-size: 2.2rem; }
-  .cards { grid-template-columns: 1fr; max-width: 400px; }
-  .stats { gap: 24px; }
-  .dashboardGrid { grid-template-columns: 1fr !important; }
-}
-
 .dashboardGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -95,4 +88,12 @@
   font-size: 0.88rem;
   color: var(--text-secondary);
   line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .title { font-size: 2.2rem; }
+  .cards { grid-template-columns: 1fr; max-width: 400px; }
+  .stats { gap: 24px; }
+  .dashboardGrid { grid-template-columns: 1fr !important; gap: 16px !important; }
+  .dashboardCard { padding: 24px 16px !important; }
 }

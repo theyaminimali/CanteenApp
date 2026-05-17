@@ -164,7 +164,7 @@ export default function Home() {
 
   // 2. Logged In: Student Dashboard / Second Interface
   return (
-    <div className={styles.hero} style={{ minHeight: 'calc(100vh - 70px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px' }}>
+    <div className={styles.hero} style={{ minHeight: 'calc(100vh - 70px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '60px 20px 40px' }}>
       <div className={styles.bgOrbs}>
         <div className={styles.orb1} />
         <div className={styles.orb2} />
