@@ -20,6 +20,15 @@ export default function Navbar() {
     try { await logout(); } catch (e) { console.error(e); }
   };
 
+  // Request browser notification permissions on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      if (Notification.permission === 'default') {
+        Notification.requestPermission().catch(err => console.error("Notification permission request failed:", err));
+      }
+    }
+  }, []);
+
   useEffect(() => {
     if (!user) {
       notifiedOrders.current.clear();
@@ -62,6 +71,29 @@ export default function Navbar() {
 
             // Show custom ready toast notification
             addToast('Your Order is ready now please pickup it', 'success');
+
+            // Trigger native device/system push notification (works when screen is locked/app is backgrounded)
+            if (typeof window !== 'undefined' && 'Notification' in window) {
+              if (Notification.permission === 'granted') {
+                new Notification('Order Ready!', {
+                  body: 'Your Order is ready now please pickup it',
+                  icon: 'https://cdn-icons-png.flaticon.com/512/1046/1046747.png', // Premium food icon
+                  tag: orderId,
+                  requireInteraction: true
+                });
+              } else if (Notification.permission === 'default') {
+                Notification.requestPermission().then((permission) => {
+                  if (permission === 'granted') {
+                    new Notification('Order Ready!', {
+                      body: 'Your Order is ready now please pickup it',
+                      icon: 'https://cdn-icons-png.flaticon.com/512/1046/1046747.png',
+                      tag: orderId,
+                      requireInteraction: true
+                    });
+                  }
+                });
+              }
+            }
           }
         }
       });
