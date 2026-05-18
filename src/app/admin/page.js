@@ -117,6 +117,11 @@ export default function AdminDashboard() {
                       {order.items?.map((it, i) => (
                         <span key={i}>{it.quantity}x {it.name}</span>
                       ))}
+                      {order.specialInstructions && (
+                        <div style={{ marginTop: '6px', fontSize: '0.8rem', color: '#fbbf24', fontStyle: 'italic', fontWeight: 600 }}>
+                          💡 Instruction: &quot;{order.specialInstructions}&quot;
+                        </div>
+                      )}
                     </div>
                   </td>
                   <td>₹{order.total}</td>

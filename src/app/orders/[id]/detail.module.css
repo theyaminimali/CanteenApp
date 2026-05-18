@@ -22,7 +22,35 @@
 .itemName { flex: 1; font-weight: 500; }
 .itemQty { color: var(--text-muted); font-size: 0.85rem; }
 .itemPrice { font-weight: 700; color: var(--accent); min-width: 60px; text-align: right; }
-.instructions { margin-top: 16px; padding: 12px 16px; background: var(--bg-secondary); border-radius: var(--radius-sm); font-size: 0.85rem; color: var(--text-secondary); }
+.instructions {
+  margin-top: 16px;
+  padding: 14px 18px;
+  background: rgba(251, 191, 36, 0.06);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.instructionsLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.instructionsText {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.instructionsNote {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 4px;
+}
 .totalRow { display: flex; justify-content: space-between; padding-top: 16px; margin-top: 8px; border-top: 2px solid var(--border); font-size: 1.2rem; font-weight: 800; }
 .totalRow span:last-child { color: var(--accent); }
 

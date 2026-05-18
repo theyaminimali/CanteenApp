@@ -9,7 +9,7 @@
 }
 .logo { display: flex; align-items: center; gap: 10px; }
 .logoIcon { font-size: 1.6rem; }
-.logoText { font-size: 1.3rem; font-weight: 800; background: linear-gradient(135deg, var(--accent), #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.logoText { font-size: 1.3rem; font-weight: 800; background: linear-gradient(135deg, var(--accent), #fbbf24); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 .links { display: flex; align-items: center; gap: 24px; }
 .link { color: var(--text-secondary); font-weight: 500; font-size: 0.9rem; transition: var(--transition); position: relative; }
 .link:hover { color: var(--text-primary); }
@@ -56,15 +56,9 @@
   .hamburger { display: flex; }
   .links {
     position: fixed; top: 70px; left: 0; right: 0; bottom: 0;
-    background: #0c0c12 !important;
-    backdrop-filter: blur(25px);
-    flex-direction: column;
-    padding: 40px 20px; gap: 28px;
+    background: var(--bg-primary); flex-direction: column;
+    padding: 32px 20px; gap: 20px;
     transform: translateX(100%); transition: var(--transition);
-    z-index: 99999 !important;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
   }
   .linksOpen { transform: translateX(0); }
 }

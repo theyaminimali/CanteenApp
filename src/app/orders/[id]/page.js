@@ -88,7 +88,11 @@ export default function OrderDetailPage({ params }) {
             </div>
           ))}
           {order.specialInstructions && (
-            <div className={styles.instructions}><strong>Special Instructions:</strong> {order.specialInstructions}</div>
+            <div className={styles.instructions}>
+              <span className={styles.instructionsLabel}>💡 Your Custom Demands:</span>
+              <span className={styles.instructionsText}>&quot;{order.specialInstructions}&quot;</span>
+              <span className={styles.instructionsNote}>Sent as-is directly to the receiver for your satisfaction!</span>
+            </div>
           )}
           <div className={styles.totalRow}><span>Total</span><span>₹{order.total}</span></div>
         </div>

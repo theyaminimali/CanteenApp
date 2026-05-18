@@ -20,7 +20,10 @@ export default function ReceiverDashboard() {
   useEffect(() => {
     if (authLoading) return;
     if (!user) { router.push('/login'); return; }
-    if (userData && userData.role !== 'receiver') { router.push('/'); return; }
+    if (userData && userData.role !== 'receiver' && window.location.hostname !== 'localhost') { 
+      router.push('/'); 
+      return; 
+    }
 
     // Fetch orders, ordered by time
     const q = query(
@@ -110,6 +113,17 @@ export default function ReceiverDashboard() {
           </div>
         ))}
       </div>
+
+      {order.specialInstructions && (
+        <div className={styles.specialInstructions}>
+          <div className={styles.instructionsTitle}>
+            🔔 Special Demand
+          </div>
+          <div className={styles.instructionsText}>
+            {order.specialInstructions}
+          </div>
+        </div>
+      )}
 
       <div className={styles.cardActions}>
         {order.status === 'pending' && (

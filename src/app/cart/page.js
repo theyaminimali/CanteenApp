@@ -104,9 +104,18 @@ export default function CartPage() {
               </div>
             ))}
           </div>
-          <div className={styles.field}>
-            <label>Special Instructions</label>
-            <textarea className="input-field" rows={3} placeholder="Any special requests..." value={specialInstructions} onChange={(e) => setSpecialInstructions(e.target.value)} />
+          <div className={styles.instructionsContainer}>
+            <label className={styles.instructionsLabel}>
+              <span>💡</span> Your Custom Requirements / Demands
+            </label>
+            <textarea 
+              className={styles.instructionsTextarea} 
+              rows={3} 
+              placeholder="e.g., Chai without sugar, make it extra hot, no onions, etc." 
+              value={specialInstructions} 
+              onChange={(e) => setSpecialInstructions(e.target.value)} 
+            />
+            <p className={styles.instructionsHelp}>Sent as-is directly to the receiver for your satisfaction! 😊</p>
           </div>
           <div className={styles.totalRow}><span>Total</span><span className={styles.totalAmt}>₹{cartTotal}</span></div>
           <button className="btn btn-primary btn-lg" style={{ width: '100%' }} onClick={handlePlaceOrder} disabled={placing}>
@@ -116,21 +125,16 @@ export default function CartPage() {
       </div>
     </div>
       {showSuccessDialog && (
-        <>
-          <style>{`
-            nav { display: none !important; }
-          `}</style>
-          <div className={styles.dialogOverlay}>
-            <div className={`${styles.dialogBox} glass-card`}>
-              <span className={styles.dialogIcon}>🎉</span>
-              <h2>Success!</h2>
-              <p>{userData?.name} Your Order paced</p>
-              <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => router.push('/')}>
-                Continue
-              </button>
-            </div>
+        <div className={styles.dialogOverlay}>
+          <div className={`${styles.dialogBox} glass-card`}>
+            <span className={styles.dialogIcon}>🎉</span>
+            <h2>Success!</h2>
+            <p>{userData?.name} Your Order paced</p>
+            <button className="btn btn-primary" style={{ width: '100%' }} onClick={() => router.push('/')}>
+              Continue
+            </button>
           </div>
-        </>
+        </div>
       )}
       <ToastContainer toasts={toasts} removeToast={removeToast} />
     </div>
